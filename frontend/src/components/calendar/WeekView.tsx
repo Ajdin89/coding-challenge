@@ -1,0 +1,102 @@
+import { useRef, useEffect } from 'react';
+import { Box, Typography, Paper } from '@mui/material';
+import { startOfWeek, addDays, format } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
+import type { CalendarEvent } from '../../types/event';
+import { useCalendarStore } from '../../stores/calendarStore';
+import { TimeGridColumn, TimeGutter, HOUR_HEIGHT } from './TimeGrid';
+import { getDateInTimezone } from '../../utils/timezone';
+
+const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+interface WeekViewProps {
+  events: CalendarEvent[];
+}
+
+export function WeekView({ events }: WeekViewProps) {
+  const { currentDate, displayTimezone, openCreateModal, openEditModal } = useCalendarStore();
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
+  const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+
+  // Scroll to 8am on mount
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = HOUR_HEIGHT * 7;
+    }
+  }, []);
+
+  const today = getDateInTimezone(new Date().toISOString(), displayTimezone);
+
+  return (
+    <Paper variant="outlined" sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      {/* Day header row */}
+      <Box sx={{ display: 'flex', borderBottom: '2px solid', borderColor: 'divider', flexShrink: 0 }}>
+        <Box sx={{ width: 52, flexShrink: 0 }} />
+        {days.map((day, i) => {
+          const dateStr = format(toZonedTime(day, displayTimezone), 'yyyy-MM-dd');
+          const isToday = dateStr === today;
+          return (
+            <Box
+              key={i}
+              sx={{
+                flex: 1,
+                textAlign: 'center',
+                py: 1,
+                borderLeft: i > 0 ? '1px solid' : 'none',
+                borderColor: 'divider',
+              }}
+            >
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                {DAY_LABELS[i]}
+              </Typography>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: 700,
+                  width: 28,
+                  height: 28,
+                  borderRadius: '50%',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  ...(isToday && { bgcolor: 'primary.main', color: 'primary.contrastText' }),
+                }}
+              >
+                {format(day, 'd')}
+              </Typography>
+            </Box>
+          );
+        })}
+      </Box>
+
+      {/* Scrollable time grid */}
+      <Box ref={scrollRef} sx={{ flex: 1, overflowY: 'auto', display: 'flex' }}>
+        <TimeGutter />
+        {days.map((day, i) => {
+          const dateStr = format(toZonedTime(day, displayTimezone), 'yyyy-MM-dd');
+          return (
+            <Box
+              key={i}
+              sx={{
+                flex: 1,
+                borderLeft: '1px solid',
+                borderColor: 'divider',
+                position: 'relative',
+              }}
+            >
+              <TimeGridColumn
+                dateStr={dateStr}
+                events={events}
+                displayTimezone={displayTimezone}
+                onClickSlot={(start, end) => openCreateModal(start, end)}
+                onClickEvent={openEditModal}
+              />
+            </Box>
+          );
+        })}
+      </Box>
+    </Paper>
+  );
+}
