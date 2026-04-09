@@ -1,6 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { HomeComponent } from '../components/home';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/')({
-  component: HomeComponent,
+  beforeLoad: () => { throw redirect({ to: '/calendar' }); },
+  component: () => null,
 });

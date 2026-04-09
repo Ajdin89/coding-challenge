@@ -1,6 +1,7 @@
 import { Link, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { AppBar, Toolbar, Typography, Button, Container, Box } from '@mui/material';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 export function RootLayout() {
   return (
@@ -8,33 +9,26 @@ export function RootLayout() {
       {/* GLOBAL NAVIGATION */}
       <AppBar position="static">
         <Toolbar>
+          <CalendarMonthIcon sx={{ mr: 1 }} />
           <Typography variant="h6" component="div" sx={{ mr: 4 }}>
-            Challenge App
+            Calendar
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: 'flex', gap: 2 }}>
             <Button
               color="inherit"
               component={Link}
-              to="/"
+              to="/calendar"
               activeProps={{ style: { fontWeight: 'bold', textDecoration: 'underline' } }}
             >
-              Home
-            </Button>
-            <Button
-              color="inherit"
-              component={Link}
-              to="/users"
-              activeProps={{ style: { fontWeight: 'bold', textDecoration: 'underline' } }}
-            >
-              Users
+              Calendar
             </Button>
           </Box>
         </Toolbar>
       </AppBar>
 
       {/* PAGE CONTENT */}
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Container maxWidth="xl" sx={{ mt: 2, mb: 2 }}>
         <Outlet />
       </Container>
 
