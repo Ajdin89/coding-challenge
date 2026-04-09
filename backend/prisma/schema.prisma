@@ -13,8 +13,12 @@ datasource db {
   provider = "postgresql"
 }
 
-// Example model that can be removed
-model Example {
-  id   Int    @id @default(autoincrement())
-  name String
+model Event {
+  id        String   @id @default(uuid())
+  title     String
+  startUtc  DateTime
+  endUtc    DateTime
+  timezone  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
