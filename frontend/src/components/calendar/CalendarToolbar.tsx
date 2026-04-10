@@ -12,11 +12,21 @@ import {
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import AddIcon from '@mui/icons-material/Add';
+import { useMemo } from 'react';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
 import { useCalendarStore, type CalendarView } from '../../stores/calendarStore';
-import { getTimezoneList } from '../../utils/timezone';
+import { getTimezoneList, getTimezoneCountryCode } from '../../utils/timezone';
 
 const TIMEZONES = getTimezoneList();
+
+const codeBoxSx = {
+  fontSize: '0.65rem',
+  fontWeight: 700,
+  color: 'text.disabled',
+  flexShrink: 0,
+  letterSpacing: '0.05em',
+  ml: 1.2,
+} as const;
 
 function formatTitle(view: CalendarView, date: Date): string {
   if (view === 'month') return format(date, 'MMMM yyyy');
@@ -43,6 +53,15 @@ export function CalendarToolbar() {
     setDisplayTimezone,
     openCreateModal,
   } = useCalendarStore();
+
+  const startAdornment = useMemo(() => {
+    const code = getTimezoneCountryCode(displayTimezone);
+    return code ? (
+      <Box component="span" sx={codeBoxSx}>
+        {code}
+      </Box>
+    ) : undefined;
+  }, [displayTimezone]);
 
   return (
     <Box
@@ -97,9 +116,26 @@ export function CalendarToolbar() {
         value={displayTimezone}
         onChange={(_, v) => v && setDisplayTimezone(v)}
         size="small"
-        sx={{ width: 220 }}
-        renderInput={(params) => <TextField {...params} label="Timezone" />}
+        sx={{ width: 240 }}
         disableClearable
+        renderOption={(props, option) => {
+          const code = getTimezoneCountryCode(option);
+          return (
+            <li {...props} style={{ display: 'flex', alignItems: 'center' }}>
+              <Box component="span" sx={{ ...codeBoxSx, ml: 0, mr: 2, width: '1.1rem', textAlign: 'center', flexShrink: 0 }}>
+                {code}
+              </Box>
+              {option}
+            </li>
+          );
+        }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Timezone"
+            InputProps={{ ...params.InputProps, startAdornment }}
+          />
+        )}
       />
 
       {/* View toggle */}
