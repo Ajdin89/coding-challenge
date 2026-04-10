@@ -52,6 +52,8 @@ export function CalendarToolbar() {
         gap: 1.5,
         flexWrap: 'wrap',
         mb: 2,
+        overflow: 'visible',
+        pt: 1,
       }}
     >
       {/* New Event */}

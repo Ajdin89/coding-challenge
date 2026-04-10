@@ -27,43 +27,60 @@ export function DayView({ events }: DayViewProps) {
 
   return (
     <Paper variant="outlined" sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-      {/* Header */}
-      <Box sx={{ display: 'flex', borderBottom: '2px solid', borderColor: 'divider', flexShrink: 0 }}>
-        <Box sx={{ width: 52, flexShrink: 0 }} />
-        <Box sx={{ flex: 1, textAlign: 'center', py: 1 }}>
-          <Typography variant="caption" color="text.secondary">
-            {format(currentDate, 'EEEE')}
-          </Typography>
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 700,
-              width: 36,
-              height: 36,
-              borderRadius: '50%',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              mx: 'auto',
-              ...(isToday && { bgcolor: 'primary.main', color: 'primary.contrastText' }),
-            }}
-          >
-            {format(currentDate, 'd')}
-          </Typography>
+      {/* Single scroll container — header sticky inside so width always matches grid */}
+      <Box
+        ref={scrollRef}
+        sx={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}
+      >
+        {/* Sticky header */}
+        <Box
+          sx={{
+            display: 'flex',
+            borderBottom: '2px solid',
+            borderColor: 'divider',
+            position: 'sticky',
+            top: 0,
+            bgcolor: 'background.paper',
+            zIndex: 2,
+            flexShrink: 0,
+          }}
+        >
+          <Box sx={{ width: 60, flexShrink: 0 }} />
+          <Box sx={{ flex: 1, textAlign: 'center', py: 1 }}>
+            <Typography variant="caption" color="text.secondary">
+              {format(currentDate, 'EEEE')}
+            </Typography>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 700,
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mx: 'auto',
+                ...(isToday && { bgcolor: 'primary.main', color: 'primary.contrastText' }),
+              }}
+            >
+              {format(currentDate, 'd')}
+            </Typography>
+          </Box>
         </Box>
-      </Box>
 
-      {/* Scrollable grid */}
-      <Box ref={scrollRef} sx={{ flex: 1, overflowY: 'auto', display: 'flex' }}>
-        <TimeGutter />
-        <Box sx={{ flex: 1, borderLeft: '1px solid', borderColor: 'divider', position: 'relative' }}>
-          <TimeGridColumn
-            dateStr={dateStr}
-            events={events}
-            displayTimezone={displayTimezone}
-            onClickSlot={(start, end) => openCreateModal(start, end)}
-            onClickEvent={openEditModal}
-          />
+        {/* Time grid */}
+        <Box sx={{ flex: 1, display: 'flex' }}>
+          <TimeGutter />
+          <Box sx={{ flex: 1, borderLeft: '1px solid', borderColor: 'divider', position: 'relative' }}>
+            <TimeGridColumn
+              dateStr={dateStr}
+              events={events}
+              displayTimezone={displayTimezone}
+              onClickSlot={(start, end) => openCreateModal(start, end)}
+              onClickEvent={openEditModal}
+            />
+          </Box>
         </Box>
       </Box>
     </Paper>

@@ -21,7 +21,7 @@ function CalendarPage() {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
       <CalendarToolbar />
 
       {isLoading ? (
