@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -18,44 +18,60 @@ import { isAxiosError } from 'axios';
 import { useCalendarStore } from '../../stores/calendarStore';
 import { useCreateEvent, useUpdateEvent, useDeleteEvent } from '../../hooks/useEvents';
 import { localToUtc, utcToLocalInput, getTimezoneList } from '../../utils/timezone';
+import type { CalendarEvent } from '../../types/event';
 
 const TIMEZONES = getTimezoneList();
 
-export function EventModal() {
-  const { modal, closeModal, displayTimezone } = useCalendarStore();
-  const { open, mode, selectedEvent, prefillStart, prefillEnd } = modal;
+type ContentProps = {
+  mode: 'create' | 'edit';
+  selectedEvent: CalendarEvent | null | undefined;
+  prefillStart: string | undefined;
+  prefillEnd: string | undefined;
+  displayTimezone: string;
+  closeModal: () => void;
+};
 
+function EventModalContent({
+  mode,
+  selectedEvent,
+  prefillStart,
+  prefillEnd,
+  displayTimezone,
+  closeModal,
+}: ContentProps) {
   const createMutation = useCreateEvent();
   const updateMutation = useUpdateEvent();
   const deleteMutation = useDeleteEvent();
 
-  const [title, setTitle] = useState('');
-  const [startLocal, setStartLocal] = useState('');
-  const [endLocal, setEndLocal] = useState('');
-  const [timezone, setTimezone] = useState(displayTimezone);
-  const [conflictError, setConflictError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    setConflictError(null);
+  // Initialised once on mount from props — no effect needed.
+  // The parent passes a changing `key` to remount this component when the
+  // modal opens with different data, resetting state automatically.
+  const [form, setForm] = useState(() => {
     if (mode === 'edit' && selectedEvent) {
-      setTitle(selectedEvent.title);
-      setTimezone(selectedEvent.timezone);
-      setStartLocal(utcToLocalInput(selectedEvent.startUtc, selectedEvent.timezone));
-      setEndLocal(utcToLocalInput(selectedEvent.endUtc, selectedEvent.timezone));
-    } else {
-      setTitle('');
-      setTimezone(displayTimezone);
-      setStartLocal(prefillStart ?? '');
-      setEndLocal(prefillEnd ?? '');
+      return {
+        title: selectedEvent.title,
+        timezone: selectedEvent.timezone,
+        startLocal: utcToLocalInput(selectedEvent.startUtc, selectedEvent.timezone),
+        endLocal: utcToLocalInput(selectedEvent.endUtc, selectedEvent.timezone),
+        conflictError: null as string | null,
+      };
     }
-  }, [open, mode, selectedEvent, prefillStart, prefillEnd, displayTimezone]);
+    return {
+      title: '',
+      timezone: displayTimezone,
+      startLocal: prefillStart ?? '',
+      endLocal: prefillEnd ?? '',
+      conflictError: null as string | null,
+    };
+  });
+
+  const { title, startLocal, endLocal, timezone, conflictError } = form;
 
   const isPending =
     createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
 
   const handleSave = async () => {
-    setConflictError(null);
+    setForm((f) => ({ ...f, conflictError: null }));
     if (!title.trim() || !startLocal || !endLocal) return;
 
     const startUtc = localToUtc(startLocal, timezone);
@@ -74,14 +90,16 @@ export function EventModal() {
     } catch (err) {
       if (isAxiosError(err) && err.response?.status === 409) {
         const body = err.response.data as {
-          message?: { message?: string; conflictingEvent?: { title: string } };
+          message?: string;
+          conflictingEvent?: { title: string };
         };
-        const conflicting = body?.message?.conflictingEvent?.title;
-        setConflictError(
-          conflicting
+        const conflicting = body?.conflictingEvent?.title;
+        setForm((f) => ({
+          ...f,
+          conflictError: conflicting
             ? `Conflicts with "${conflicting}"`
-            : 'This time slot conflicts with an existing event.'
-        );
+            : 'This time slot conflicts with an existing event.',
+        }));
       }
     }
   };
@@ -93,7 +111,7 @@ export function EventModal() {
   };
 
   return (
-    <Dialog open={open} onClose={closeModal} fullWidth maxWidth="sm">
+    <>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h6">{mode === 'create' ? 'New Event' : 'Edit Event'}</Typography>
         {mode === 'edit' && (
@@ -110,7 +128,7 @@ export function EventModal() {
           <TextField
             label="Title"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
             fullWidth
             autoFocus
             required
@@ -121,7 +139,7 @@ export function EventModal() {
             label="Start"
             type="datetime-local"
             value={startLocal}
-            onChange={(e) => setStartLocal(e.target.value)}
+            onChange={(e) => setForm((f) => ({ ...f, startLocal: e.target.value }))}
             fullWidth
             required
             disabled={isPending}
@@ -132,7 +150,7 @@ export function EventModal() {
             label="End"
             type="datetime-local"
             value={endLocal}
-            onChange={(e) => setEndLocal(e.target.value)}
+            onChange={(e) => setForm((f) => ({ ...f, endLocal: e.target.value }))}
             fullWidth
             required
             disabled={isPending}
@@ -142,7 +160,7 @@ export function EventModal() {
           <Autocomplete
             options={TIMEZONES}
             value={timezone}
-            onChange={(_, v) => v && setTimezone(v)}
+            onChange={(_, v) => v && setForm((f) => ({ ...f, timezone: v }))}
             disabled={isPending}
             renderInput={(params) => <TextField {...params} label="Timezone" required />}
           />
@@ -162,6 +180,33 @@ export function EventModal() {
           {mode === 'create' ? 'Create' : 'Save'}
         </Button>
       </DialogActions>
+    </>
+  );
+}
+
+export function EventModal() {
+  const { modal, closeModal, displayTimezone } = useCalendarStore();
+  const { open, mode, selectedEvent, prefillStart, prefillEnd } = modal;
+
+  // Changing `key` when the modal opens with new data causes EventModalContent
+  // to remount with fresh initialised state — no effect or setState-in-effect needed.
+  const contentKey = open
+    ? `${mode}-${selectedEvent?.id ?? 'new'}-${prefillStart ?? ''}`
+    : 'closed';
+
+  return (
+    <Dialog open={open} onClose={closeModal} fullWidth maxWidth="sm">
+      {open && (
+        <EventModalContent
+          key={contentKey}
+          mode={mode}
+          selectedEvent={selectedEvent}
+          prefillStart={prefillStart}
+          prefillEnd={prefillEnd}
+          displayTimezone={displayTimezone}
+          closeModal={closeModal}
+        />
+      )}
     </Dialog>
   );
 }
