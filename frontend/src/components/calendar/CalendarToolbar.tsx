@@ -121,8 +121,21 @@ export function CalendarToolbar() {
         renderOption={(props, option) => {
           const code = getTimezoneCountryCode(option);
           return (
-            <li {...props} style={{ display: 'flex', alignItems: 'center' }}>
-              <Box component="span" sx={{ ...codeBoxSx, ml: 0, mr: 2, width: '1.1rem', textAlign: 'center', flexShrink: 0 }}>
+            <li
+              {...props}
+              style={{ display: 'flex', alignItems: 'center', paddingTop: 2, paddingBottom: 2 }}
+            >
+              <Box
+                component="span"
+                sx={{
+                  ...codeBoxSx,
+                  ml: -0.75,
+                  mr: 0.75,
+                  width: '1.1rem',
+                  textAlign: 'center',
+                  flexShrink: 0,
+                }}
+              >
                 {code}
               </Box>
               {option}
