@@ -1,4 +1,12 @@
-import { IsString, IsNotEmpty, IsDateString } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsDateString,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { RecurrenceDto } from './recurrence.dto';
 
 export class CreateEventDto {
   @IsString()
@@ -14,4 +22,9 @@ export class CreateEventDto {
   @IsString()
   @IsNotEmpty()
   timezone!: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => RecurrenceDto)
+  recurrence?: RecurrenceDto;
 }

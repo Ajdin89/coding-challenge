@@ -1,5 +1,10 @@
 import axios from 'axios';
-import type { CalendarEvent, CreateEventPayload, UpdateEventPayload } from '../types/event';
+import type {
+  CalendarEvent,
+  CreateEventPayload,
+  UpdateEventPayload,
+  DeleteScope,
+} from '../types/event';
 
 const api = axios.create({ baseURL: 'http://localhost:3000' });
 
@@ -18,6 +23,6 @@ export async function updateEvent(id: string, payload: UpdateEventPayload): Prom
   return data;
 }
 
-export async function deleteEvent(id: string): Promise<void> {
-  await api.delete(`/events/${id}`);
+export async function deleteEvent(id: string, scope: DeleteScope = 'single'): Promise<void> {
+  await api.delete(`/events/${id}`, { params: { scope } });
 }

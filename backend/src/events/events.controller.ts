@@ -6,8 +6,10 @@ import {
   Delete,
   Param,
   Body,
+  Query,
   HttpCode,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
@@ -39,7 +41,13 @@ export class EventsController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string) {
-    return this.eventsService.remove(id);
+  remove(
+    @Param('id') id: string,
+    @Query('scope') scope?: string,
+  ) {
+    if (scope && scope !== 'single' && scope !== 'series') {
+      throw new BadRequestException('scope must be "single" or "series"');
+    }
+    return this.eventsService.remove(id, scope as 'single' | 'series' | undefined);
   }
 }

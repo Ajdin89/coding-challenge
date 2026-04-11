@@ -1,6 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchEvents, createEvent, updateEvent, deleteEvent } from '../api/events';
-import type { CreateEventPayload, UpdateEventPayload } from '../types/event';
+import type {
+  CreateEventPayload,
+  UpdateEventPayload,
+  DeleteScope,
+} from '../types/event';
 
 const EVENTS_KEY = ['events'] as const;
 
@@ -28,7 +32,8 @@ export function useUpdateEvent() {
 export function useDeleteEvent() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => deleteEvent(id),
+    mutationFn: ({ id, scope = 'single' }: { id: string; scope?: DeleteScope }) =>
+      deleteEvent(id, scope),
     onSuccess: () => qc.invalidateQueries({ queryKey: EVENTS_KEY }),
   });
 }

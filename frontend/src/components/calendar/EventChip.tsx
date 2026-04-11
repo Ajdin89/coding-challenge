@@ -1,4 +1,5 @@
 import { Box, Typography, Tooltip } from '@mui/material';
+import RepeatIcon from '@mui/icons-material/Repeat';
 import type { CalendarEvent } from '../../types/event';
 import { formatInTimezone } from '../../utils/timezone';
 
@@ -15,7 +16,12 @@ export function EventChip({ event, displayTimezone, onClick, compact = false, st
   const endLabel = formatInTimezone(event.endUtc, displayTimezone, 'HH:mm');
 
   return (
-    <Tooltip title={`${event.title} · ${startLabel}–${endLabel} (${event.timezone})`} arrow>
+    <Tooltip
+      title={`${event.title} · ${startLabel}–${endLabel} (${event.timezone})${
+        event.seriesId ? ' · recurring' : ''
+      }`}
+      arrow
+    >
       <Box
         onClick={() => onClick?.(event)}
         sx={{
@@ -31,19 +37,32 @@ export function EventChip({ event, displayTimezone, onClick, compact = false, st
           ...style,
         }}
       >
-        <Typography
-          variant="caption"
+        <Box
           sx={{
-            fontWeight: 600,
-            display: 'block',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            lineHeight: 1.3,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.5,
+            minWidth: 0,
           }}
         >
-          {event.title}
-        </Typography>
+          {event.seriesId && (
+            <RepeatIcon sx={{ fontSize: '0.85rem', flexShrink: 0 }} />
+          )}
+          <Typography
+            variant="caption"
+            sx={{
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              lineHeight: 1.3,
+              flex: 1,
+              minWidth: 0,
+            }}
+          >
+            {event.title}
+          </Typography>
+        </Box>
         {!compact && (
           <Typography
             variant="caption"
