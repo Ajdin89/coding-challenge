@@ -11,6 +11,7 @@ import {
 import type { CalendarEvent } from '../types/event';
 
 export type CalendarView = 'day' | 'week' | 'month';
+export type ThemeMode = 'light' | 'dark';
 
 interface ModalState {
   open: boolean;
@@ -24,9 +25,11 @@ interface CalendarState {
   view: CalendarView;
   currentDate: Date;
   displayTimezone: string;
+  themeMode: ThemeMode;
   modal: ModalState;
 
   setView: (view: CalendarView) => void;
+  toggleTheme: () => void;
   goToToday: () => void;
   goNext: () => void;
   goPrev: () => void;
@@ -43,9 +46,11 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
   view: 'week',
   currentDate: startOfWeek(new Date(), { weekStartsOn: 1 }),
   displayTimezone: userTimezone,
+  themeMode: 'light',
   modal: { open: false, mode: 'create', selectedEvent: null },
 
   setView: (view) => set({ view }),
+  toggleTheme: () => set((state) => ({ themeMode: state.themeMode === 'light' ? 'dark' : 'light' })),
 
   goToToday: () => set({ currentDate: new Date() }),
 
