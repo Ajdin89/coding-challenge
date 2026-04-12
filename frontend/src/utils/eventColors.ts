@@ -17,6 +17,12 @@ export interface EventColorTheme {
   border: string;
 }
 
+interface EventColorInput {
+  id: string;
+  color?: string | null;
+  seriesId?: string | null;
+}
+
 function hashString(value: string): number {
   let hash = 0;
   for (let i = 0; i < value.length; i += 1) {
@@ -33,14 +39,16 @@ function deriveTheme(base: string): EventColorTheme {
   };
 }
 
-export function getEventColorTheme(event: { id: string; color?: string | null }): EventColorTheme {
+export function getEventColorTheme(event: EventColorInput): EventColorTheme {
   if (event.color) {
     return (
       EVENT_COLOR_PALETTE.find((theme) => theme.base.toLowerCase() === event.color?.toLowerCase()) ??
       deriveTheme(event.color)
     );
   }
-  return EVENT_COLOR_PALETTE[hashString(event.id) % EVENT_COLOR_PALETTE.length];
+
+  const colorKey = event.seriesId || event.id;
+  return EVENT_COLOR_PALETTE[hashString(colorKey) % EVENT_COLOR_PALETTE.length];
 }
 
 export function getEventTextColor(base: string, isDarkMode: boolean) {

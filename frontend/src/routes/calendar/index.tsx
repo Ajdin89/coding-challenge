@@ -43,7 +43,7 @@ function CalendarPage() {
         >
           <Box
             sx={{
-              width: { xs: '100%', lg: 320 },
+              width: { xs: '100%', lg: 260 },
               flexShrink: 0,
               minHeight: { xs: 260, lg: 0 },
               order: { xs: 2, lg: 1 },
@@ -56,7 +56,9 @@ function CalendarPage() {
             />
           </Box>
 
-          <Box sx={{ flex: 1, minWidth: 0, minHeight: 0, overflow: 'hidden', order: { xs: 1, lg: 2 } }}>
+          <Box
+            sx={{ flex: 1, minWidth: 0, minHeight: 0, overflow: 'hidden', order: { xs: 1, lg: 2 } }}
+          >
             {view === 'week' && <WeekView events={events} />}
             {view === 'day' && <DayView events={events} />}
             {view === 'month' && <MonthView events={events} />}
