@@ -47,6 +47,7 @@ export class EventsService {
           startUtc: start,
           endUtc: end,
           timezone: dto.timezone,
+          color: dto.color ?? null,
         },
       });
     }
@@ -69,6 +70,7 @@ export class EventsService {
         startUtc: occ.start,
         endUtc: occ.end,
         timezone: dto.timezone,
+        color: dto.color ?? null,
         seriesId,
       })),
     });
@@ -82,6 +84,7 @@ export class EventsService {
 
   async update(id: string, dto: UpdateEventDto) {
     const existing = await this.findOne(id);
+    const hasColor = Object.prototype.hasOwnProperty.call(dto, 'color');
 
     const start = dto.startUtc ? new Date(dto.startUtc) : existing.startUtc;
     const end = dto.endUtc ? new Date(dto.endUtc) : existing.endUtc;
@@ -95,6 +98,7 @@ export class EventsService {
         startUtc: start,
         endUtc: end,
         ...(dto.timezone !== undefined && { timezone: dto.timezone }),
+        ...(hasColor && { color: dto.color ?? null }),
       },
     });
   }

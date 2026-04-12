@@ -25,6 +25,11 @@ import { isAxiosError } from 'axios';
 import { useCalendarStore } from '../../stores/calendarStore';
 import { useCreateEvent, useUpdateEvent, useDeleteEvent } from '../../hooks/useEvents';
 import {
+  EVENT_COLOR_PALETTE,
+  getEventColorTheme,
+  getEventTextColor,
+} from '../../utils/eventColors';
+import {
   localToUtc,
   utcToLocalInput,
   getTimezoneList,
@@ -195,6 +200,7 @@ function EventModalContent({
       return {
         title: selectedEvent.title,
         timezone: selectedEvent.timezone,
+        color: selectedEvent.color ?? '',
         startDate: s.date,
         startTime: s.time,
         endDate: e.date,
@@ -207,6 +213,7 @@ function EventModalContent({
     return {
       title: '',
       timezone: displayTimezone,
+      color: '',
       startDate: s.date,
       startTime: s.time,
       endDate: e.date,
@@ -218,9 +225,13 @@ function EventModalContent({
   const [recurrence, setRecurrence] = useState<RecurrenceState | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  const { title, startDate, startTime, endDate, endTime, timezone, conflictError } = form;
+  const { title, startDate, startTime, endDate, endTime, timezone, color, conflictError } = form;
   const isSeries = Boolean(selectedEvent?.seriesId);
   const isEditingSeriesInstance = mode === 'edit' && isSeries;
+  const previewTheme = getEventColorTheme({
+    id: (selectedEvent?.id ?? title.trim()) || 'preview',
+    color: color || null,
+  });
 
   const isPending =
     createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
@@ -329,12 +340,13 @@ function EventModalContent({
           startUtc,
           endUtc,
           timezone,
+          color: color || undefined,
           recurrence: buildRecurrencePayload(),
         });
       } else if (selectedEvent) {
         await updateMutation.mutateAsync({
           id: selectedEvent.id,
-          payload: { title: title.trim(), startUtc, endUtc, timezone },
+          payload: { title: title.trim(), startUtc, endUtc, timezone, color: color || null },
         });
       }
       closeModal();
@@ -372,7 +384,9 @@ function EventModalContent({
   return (
     <>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h6">{mode === 'create' ? 'New Event' : 'Edit Event'}</Typography>
+        <Typography variant="h6" sx={{ fontSize: '1.05rem', fontWeight: 700 }}>
+          {mode === 'create' ? 'New Event' : 'Edit Event'}
+        </Typography>
         {mode === 'edit' && (
           <IconButton color="error" onClick={onDeleteClick} disabled={isPending} size="small">
             <DeleteIcon />
@@ -381,7 +395,7 @@ function EventModalContent({
       </DialogTitle>
 
       <DialogContent>
-        <Stack spacing={2.5} sx={{ mt: 1 }}>
+        <Stack spacing={1.75} sx={{ mt: 0.5 }}>
           {conflictError && <Alert severity="error">{conflictError}</Alert>}
 
           {isEditingSeriesInstance && (
@@ -398,7 +412,118 @@ function EventModalContent({
             autoFocus
             required
             disabled={isPending}
+            size="small"
           />
+
+          <Box>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ mb: 0.75, fontSize: '0.85rem' }}
+            >
+              Color
+            </Typography>
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.2, flexWrap: 'wrap' }}>
+                <ToggleButton
+                  value=""
+                  selected={!color}
+                  onChange={() => setForm((f) => ({ ...f, color: '' }))}
+                  disabled={isPending}
+                  size="small"
+                  sx={{
+                    px: 0.9,
+                    py: 0.2,
+                    textTransform: 'none',
+                    fontSize: '0.8rem',
+                    minHeight: 30,
+                    borderRadius: '999px',
+                  }}
+                >
+                  Auto
+                </ToggleButton>
+
+                <ToggleButtonGroup
+                  exclusive
+                  value={color}
+                  onChange={(_, next) => {
+                    if (next !== null) {
+                      setForm((f) => ({ ...f, color: next }));
+                    }
+                  }}
+                  disabled={isPending}
+                  size="small"
+                  sx={{
+                    flexWrap: 'wrap',
+                    gap: 0.4,
+                    '& .MuiToggleButtonGroup-grouped': {
+                      borderRadius: '999px !important',
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      mx: 0,
+                    },
+                  }}
+                >
+                  {EVENT_COLOR_PALETTE.map((theme) => (
+                    <ToggleButton
+                      key={theme.base}
+                      value={theme.base}
+                      aria-label={`Select color ${theme.base}`}
+                      sx={{ p: 0.25, minWidth: 22, minHeight: 22 }}
+                    >
+                      <Box
+                        sx={{
+                          width: 14,
+                          height: 14,
+                          borderRadius: '50%',
+                          bgcolor: theme.base,
+                          border: '1px solid rgba(15, 23, 42, 0.12)',
+                        }}
+                      />
+                    </ToggleButton>
+                  ))}
+                </ToggleButtonGroup>
+              </Box>
+
+              {!color && (
+                <Box
+                  sx={(theme) => ({
+                    mt: 0.35,
+                    px: 0.75,
+                    py: 0.35,
+                    borderRadius: 1,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 0.45,
+                    bgcolor:
+                      theme.palette.mode === 'dark' ? `rgba(255,255,255,0.04)` : previewTheme.bg,
+                    border: '1px solid',
+                    borderColor:
+                      theme.palette.mode === 'dark'
+                        ? `rgba(255,255,255,0.08)`
+                        : previewTheme.border,
+                    color: getEventTextColor(previewTheme.base, theme.palette.mode === 'dark'),
+                  })}
+                >
+                  <Box
+                    sx={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: '50%',
+                      bgcolor: previewTheme.base,
+                      flexShrink: 0,
+                    }}
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{ fontWeight: 600, fontSize: '0.68rem', lineHeight: 1.15 }}
+                  >
+                    Auto color will be assigned
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          </Box>
 
           <Stack direction="row" spacing={1.5}>
             <TextField
@@ -418,6 +543,7 @@ function EventModalContent({
               fullWidth
               required
               disabled={isPending}
+              size="small"
               slotProps={{ inputLabel: { shrink: true } }}
             />
             <TextField
@@ -428,6 +554,7 @@ function EventModalContent({
               fullWidth
               required
               disabled={isPending}
+              size="small"
               slotProps={{ select: TIME_SELECT_MENU_PROPS }}
             >
               {startTimeOptions.map((opt) => (
@@ -448,6 +575,7 @@ function EventModalContent({
                 fullWidth
                 required
                 disabled={isPending}
+                size="small"
                 slotProps={{
                   inputLabel: { shrink: true },
                   htmlInput: { min: startDate || undefined },
@@ -462,6 +590,7 @@ function EventModalContent({
               fullWidth
               required
               disabled={isPending}
+              size="small"
               slotProps={{ select: TIME_SELECT_MENU_PROPS }}
               sx={recurrence ? { maxWidth: '50%' } : undefined}
             >
@@ -479,7 +608,10 @@ function EventModalContent({
             onChange={(_, v) => v && setForm((f) => ({ ...f, timezone: v }))}
             disabled={isPending}
             getOptionLabel={getTimezoneLabel}
-            renderInput={(params) => <TextField {...params} label="Timezone" required />}
+            size="small"
+            renderInput={(params) => (
+              <TextField {...params} label="Timezone" required size="small" />
+            )}
           />
 
           {mode === 'create' && (
@@ -493,8 +625,10 @@ function EventModalContent({
                 sx={{
                   textTransform: 'none',
                   borderRadius: 2,
-                  px: 1.5,
+                  px: 1.25,
+                  py: 0.45,
                   gap: 0.75,
+                  fontSize: '0.9rem',
                 }}
               >
                 <RepeatIcon fontSize="small" />
@@ -502,9 +636,9 @@ function EventModalContent({
               </ToggleButton>
 
               {recurrence && (
-                <Stack spacing={2} sx={{ mt: 2, pl: 0.5 }}>
+                <Stack spacing={1.5} sx={{ mt: 1.5, pl: 0.5 }}>
                   <Stack direction="row" spacing={1.5} alignItems="center" flexWrap="wrap">
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
                       Repeat every
                     </Typography>
                     <TextField
@@ -611,7 +745,7 @@ function EventModalContent({
       </DialogContent>
 
       <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={closeModal} disabled={isPending}>
+        <Button onClick={closeModal} disabled={isPending} size="small">
           Cancel
         </Button>
         <Button
@@ -619,6 +753,7 @@ function EventModalContent({
           onClick={handleSave}
           disabled={isPending || !title.trim() || !startDate || !startTime || !endDate || !endTime}
           startIcon={isPending ? <CircularProgress size={16} /> : null}
+          size="small"
         >
           {mode === 'create' ? 'Create' : 'Save'}
         </Button>

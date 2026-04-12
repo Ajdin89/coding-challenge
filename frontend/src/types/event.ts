@@ -15,6 +15,7 @@ export interface CalendarEvent {
   startUtc: string;
   endUtc: string;
   timezone: string;
+  color: string | null;
   seriesId: string | null;
   createdAt: string;
   updatedAt: string;
@@ -25,6 +26,7 @@ export interface CreateEventPayload {
   startUtc: string;
   endUtc: string;
   timezone: string;
+  color?: string | null;
   recurrence?: RecurrencePayload;
 }
 
@@ -33,6 +35,7 @@ export interface UpdateEventPayload {
   startUtc?: string;
   endUtc?: string;
   timezone?: string;
+  color?: string | null;
 }
 
 export type DeleteScope = 'single' | 'series';
