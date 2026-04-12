@@ -1,11 +1,9 @@
 import { useRef, useEffect } from 'react';
 import { Box, Typography, Paper } from '@mui/material';
 import { startOfWeek, addDays, format } from 'date-fns';
-import { toZonedTime } from 'date-fns-tz';
 import type { CalendarEvent } from '../../types/event';
 import { useCalendarStore } from '../../stores/calendarStore';
 import { TimeGridColumn, TimeGutter, HOUR_HEIGHT } from './TimeGrid';
-import { getDateInTimezone } from '../../utils/timezone';
 
 const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -27,7 +25,7 @@ export function WeekView({ events }: WeekViewProps) {
     }
   }, []);
 
-  const today = getDateInTimezone(new Date().toISOString(), displayTimezone);
+  const today = format(new Date(), 'yyyy-MM-dd');
 
   return (
     <Paper variant="outlined" sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
@@ -51,7 +49,7 @@ export function WeekView({ events }: WeekViewProps) {
         >
           <Box sx={{ width: 60, flexShrink: 0, borderRight: '1px solid', borderColor: 'divider' }} />
           {days.map((day, i) => {
-            const dateStr = format(toZonedTime(day, displayTimezone), 'yyyy-MM-dd');
+            const dateStr = format(day, 'yyyy-MM-dd');
             const isToday = dateStr === today;
             return (
               <Box
@@ -92,7 +90,7 @@ export function WeekView({ events }: WeekViewProps) {
         <Box sx={{ flex: 1, display: 'flex' }}>
           <TimeGutter />
           {days.map((day, i) => {
-            const dateStr = format(toZonedTime(day, displayTimezone), 'yyyy-MM-dd');
+            const dateStr = format(day, 'yyyy-MM-dd');
             return (
               <Box
                 key={i}
