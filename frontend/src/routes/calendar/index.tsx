@@ -7,13 +7,14 @@ import { WeekView } from '../../components/calendar/WeekView';
 import { DayView } from '../../components/calendar/DayView';
 import { MonthView } from '../../components/calendar/MonthView';
 import { EventModal } from '../../components/calendar/EventModal';
+import { UpcomingSidebar } from '../../components/calendar/UpcomingSidebar';
 
 export const Route = createFileRoute('/calendar/')({
   component: CalendarPage,
 });
 
 function CalendarPage() {
-  const { view } = useCalendarStore();
+  const { view, displayTimezone, openEditModal } = useCalendarStore();
   const { data: events = [], isLoading, isError } = useEvents();
 
   if (isError) {
@@ -29,10 +30,37 @@ function CalendarPage() {
           <CircularProgress />
         </Box>
       ) : (
-        <Box sx={{ flex: 1, overflow: 'hidden' }}>
-          {view === 'week' && <WeekView events={events} />}
-          {view === 'day' && <DayView events={events} />}
-          {view === 'month' && <MonthView events={events} />}
+        <Box
+          sx={{
+            flex: 1,
+            minHeight: 0,
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: { xs: 'column', lg: 'row' },
+            gap: 2,
+            p: 2,
+          }}
+        >
+          <Box
+            sx={{
+              width: { xs: '100%', lg: 320 },
+              flexShrink: 0,
+              minHeight: { xs: 260, lg: 0 },
+              order: { xs: 2, lg: 1 },
+            }}
+          >
+            <UpcomingSidebar
+              events={events}
+              displayTimezone={displayTimezone}
+              onSelectEvent={openEditModal}
+            />
+          </Box>
+
+          <Box sx={{ flex: 1, minWidth: 0, minHeight: 0, overflow: 'hidden', order: { xs: 1, lg: 2 } }}>
+            {view === 'week' && <WeekView events={events} />}
+            {view === 'day' && <DayView events={events} />}
+            {view === 'month' && <MonthView events={events} />}
+          </Box>
         </Box>
       )}
 
