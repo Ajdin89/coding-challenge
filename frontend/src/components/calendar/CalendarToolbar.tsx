@@ -15,7 +15,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { useMemo } from 'react';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
 import { useCalendarStore, type CalendarView } from '../../stores/calendarStore';
-import { getTimezoneList, getTimezoneCountryCode } from '../../utils/timezone';
+import { getTimezoneList, getTimezoneCountryCode, getUtcOffsetLabel } from '../../utils/timezone';
 
 const TIMEZONES = getTimezoneList();
 
@@ -111,45 +111,60 @@ export function CalendarToolbar() {
       </Typography>
 
       {/* Timezone selector */}
-      <Autocomplete
-        options={TIMEZONES}
-        value={displayTimezone}
-        onChange={(_, v) => v && setDisplayTimezone(v)}
-        size="small"
-        sx={{ width: 240 }}
-        disableClearable
-        renderOption={(props, option) => {
-          const code = getTimezoneCountryCode(option);
-          return (
-            <li
-              {...props}
-              style={{ display: 'flex', alignItems: 'center', paddingTop: 2, paddingBottom: 2 }}
-            >
-              <Box
-                component="span"
-                sx={{
-                  ...codeBoxSx,
-                  ml: -0.75,
-                  mr: 0.75,
-                  width: '1.1rem',
-                  textAlign: 'center',
-                  flexShrink: 0,
-                }}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Typography
+          sx={{ fontSize: '1.1rem', fontWeight: 400, color: 'text.primary', whiteSpace: 'nowrap' }}
+        >
+          Display timezone
+        </Typography>
+        <Autocomplete
+          options={TIMEZONES}
+          value={displayTimezone}
+          onChange={(_, v) => v && setDisplayTimezone(v)}
+          getOptionLabel={(tz) => `${tz} (${getUtcOffsetLabel(tz)})`}
+          filterOptions={(options, { inputValue }) =>
+            options.filter((tz) => tz.toLowerCase().includes(inputValue.toLowerCase()))
+          }
+          size="small"
+          sx={{ width: 330 }}
+          disableClearable
+          renderOption={(props, option) => {
+            const code = getTimezoneCountryCode(option);
+            return (
+              <li
+                {...props}
+                style={{ display: 'flex', alignItems: 'center', paddingTop: 2, paddingBottom: 2 }}
               >
-                {code}
-              </Box>
-              {option}
-            </li>
-          );
-        }}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Timezone"
-            InputProps={{ ...params.InputProps, startAdornment }}
-          />
-        )}
-      />
+                <Box
+                  component="span"
+                  sx={{
+                    ...codeBoxSx,
+                    ml: -0.75,
+                    mr: 0.75,
+                    width: '1.1rem',
+                    textAlign: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  {code}
+                </Box>
+                {option}
+              </li>
+            );
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              slotProps={{
+                input: {
+                  ...params.InputProps,
+                  startAdornment,
+                },
+              }}
+            />
+          )}
+        />
+      </Box>
 
       {/* View toggle */}
       <ToggleButtonGroup

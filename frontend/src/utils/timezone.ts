@@ -180,6 +180,23 @@ export function getTimezoneCountryCode(tz: string): string | null {
 }
 
 /**
+ * Returns a UTC offset label like "UTC+02:00" for a given IANA timezone.
+ */
+export function getUtcOffsetLabel(tz: string): string {
+  const parts = new Intl.DateTimeFormat('en', {
+    timeZone: tz,
+    timeZoneName: 'shortOffset',
+  }).formatToParts(new Date());
+  const tzName = parts.find((p) => p.type === 'timeZoneName')?.value ?? '';
+  const match = tzName.match(/GMT([+-])(\d+)(?::(\d+))?/);
+  if (!match) return 'UTC+00:00';
+  const sign = match[1];
+  const hours = match[2].padStart(2, '0');
+  const minutes = (match[3] ?? '00').padStart(2, '0');
+  return `UTC${sign}${hours}:${minutes}`;
+}
+
+/**
  * A curated list of common IANA timezones. Browsers expose Intl.supportedValuesOf
  * in modern engines — fall back to a static list for older ones.
  */

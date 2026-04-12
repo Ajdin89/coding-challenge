@@ -17,7 +17,7 @@ export function RootLayout() {
         <Toolbar>
           <CalendarMonthIcon sx={{ mr: 1 }} />
           <Typography variant="h6" component="div" sx={{ mr: 4 }}>
-            Calendar
+            Calendar Scheduling App
           </Typography>
 
           <Box sx={{ flexGrow: 1 }} />
