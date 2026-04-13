@@ -9,9 +9,9 @@ import {
   Stack,
   IconButton,
   Typography,
-  CircularProgress,
   MenuItem,
 } from '@mui/material';
+import { LoadingButton } from '../../ui/LoadingButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RepeatIcon from '@mui/icons-material/Repeat';
 import { TIMEZONES, getTimezoneLabel } from '../../../utils/timezoneOptions';
@@ -55,7 +55,7 @@ export function EventModalContent(props: ContentProps) {
           {mode === 'create' ? 'New Event' : 'Edit Event'}
         </Typography>
         {mode === 'edit' && (
-          <IconButton color="error" onClick={onDeleteClick} disabled={isPending} size="small">
+          <IconButton color="error" onClick={onDeleteClick} disabled={isPending}>
             <DeleteIcon />
           </IconButton>
         )}
@@ -79,7 +79,6 @@ export function EventModalContent(props: ContentProps) {
             autoFocus
             required
             disabled={isPending}
-            size="small"
           />
 
           <ColorPicker
@@ -98,7 +97,6 @@ export function EventModalContent(props: ContentProps) {
               fullWidth
               required
               disabled={isPending}
-              size="small"
               slotProps={{ inputLabel: { shrink: true } }}
             />
             <TextField
@@ -109,7 +107,6 @@ export function EventModalContent(props: ContentProps) {
               fullWidth
               required
               disabled={isPending}
-              size="small"
               slotProps={{ select: TIME_SELECT_MENU_PROPS }}
             >
               {startTimeOptions.map((opt) => (
@@ -130,7 +127,6 @@ export function EventModalContent(props: ContentProps) {
                 fullWidth
                 required
                 disabled={isPending}
-                size="small"
                 slotProps={{
                   inputLabel: { shrink: true },
                   htmlInput: { min: startDate || undefined },
@@ -145,7 +141,6 @@ export function EventModalContent(props: ContentProps) {
               fullWidth
               required
               disabled={isPending}
-              size="small"
               slotProps={{ select: TIME_SELECT_MENU_PROPS }}
               sx={recurrence ? { maxWidth: '50%' } : undefined}
             >
@@ -165,7 +160,7 @@ export function EventModalContent(props: ContentProps) {
             getOptionLabel={getTimezoneLabel}
             size="small"
             renderInput={(params) => (
-              <TextField {...params} label="Timezone" required size="small" />
+              <TextField {...params} label="Timezone" required />
             )}
           />
 
@@ -183,18 +178,17 @@ export function EventModalContent(props: ContentProps) {
       </DialogContent>
 
       <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={closeModal} disabled={isPending} size="small">
+        <Button onClick={closeModal} disabled={isPending}>
           Cancel
         </Button>
-        <Button
+        <LoadingButton
           variant="contained"
           onClick={handleSave}
           disabled={isSaveDisabled}
-          startIcon={isPending ? <CircularProgress size={16} /> : null}
-          size="small"
+          loading={isPending}
         >
           {mode === 'create' ? 'Create' : 'Save'}
-        </Button>
+        </LoadingButton>
       </DialogActions>
 
       <DeleteConfirmDialog

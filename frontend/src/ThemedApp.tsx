@@ -19,6 +19,28 @@ export function ThemedApp() {
     palette: {
       mode: themeMode,
     },
+    components: {
+      MuiTextField: {
+        defaultProps: {
+          size: 'small',
+        },
+      },
+      MuiButton: {
+        defaultProps: {
+          size: 'small',
+        },
+      },
+      MuiIconButton: {
+        defaultProps: {
+          size: 'small',
+        },
+      },
+      MuiSelect: {
+        defaultProps: {
+          size: 'small',
+        },
+      },
+    },
   });
 
   return (

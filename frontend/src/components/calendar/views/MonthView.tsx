@@ -1,4 +1,6 @@
-import { Box, Typography, Paper } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import { DayBadge } from '../../ui/DayBadge';
+import { ViewContainer } from '../../ui/ViewContainer';
 import {
   startOfMonth,
   endOfMonth,
@@ -39,7 +41,7 @@ export function MonthView({ events }: MonthViewProps) {
   };
 
   return (
-    <Paper variant="outlined" sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <ViewContainer>
       {/* Day-of-week headers */}
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', borderBottom: '2px solid', borderColor: 'divider', flexShrink: 0 }}>
         {DAY_HEADERS.map((d) => (
@@ -92,22 +94,13 @@ export function MonthView({ events }: MonthViewProps) {
                 onClick={() => handleDayClick(day)}
                 sx={{ display: 'flex', justifyContent: 'flex-end', cursor: 'pointer' }}
               >
-                <Typography
+                <DayBadge
+                  day={format(day, 'd')}
+                  isToday={isToday}
+                  dimmed={!isCurrentMonth}
+                  size={24}
                   variant="caption"
-                  sx={{
-                    fontWeight: isToday ? 700 : 400,
-                    width: 24,
-                    height: 24,
-                    borderRadius: '50%',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: isCurrentMonth ? 'text.primary' : 'text.disabled',
-                    ...(isToday && { bgcolor: 'primary.main', color: 'primary.contrastText' }),
-                  }}
-                >
-                  {format(day, 'd')}
-                </Typography>
+                />
               </Box>
 
               {/* Events */}
@@ -146,6 +139,6 @@ export function MonthView({ events }: MonthViewProps) {
           );
         })}
       </Box>
-    </Paper>
+    </ViewContainer>
   );
 }

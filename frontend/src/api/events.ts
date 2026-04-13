@@ -6,7 +6,7 @@ import type {
   DeleteScope,
 } from '../types/event';
 
-const api = axios.create({ baseURL: 'http://localhost:3000' });
+const api = axios.create({ baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3000' });
 
 export async function fetchEvents(): Promise<CalendarEvent[]> {
   const { data } = await api.get<CalendarEvent[]>('/events');

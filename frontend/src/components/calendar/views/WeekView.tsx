@@ -1,9 +1,11 @@
 import { useRef, useEffect } from 'react';
-import { Box, Typography, Paper } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { startOfWeek, addDays, format } from 'date-fns';
 import type { CalendarEvent } from '../../../types/event';
 import { useCalendarStore } from '../../../stores/calendarStore';
 import { TimeGridColumn, TimeGutter, HOUR_HEIGHT } from '../shared/TimeGrid';
+import { DayBadge } from '../../ui/DayBadge';
+import { ViewContainer } from '../../ui/ViewContainer';
 
 const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -28,7 +30,7 @@ export function WeekView({ events }: WeekViewProps) {
   const today = format(new Date(), 'yyyy-MM-dd');
 
   return (
-    <Paper variant="outlined" sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <ViewContainer>
       {/* Single scroll container — header is sticky inside so it always matches grid width */}
       <Box
         ref={scrollRef}
@@ -66,21 +68,7 @@ export function WeekView({ events }: WeekViewProps) {
                 <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
                   {DAY_LABELS[i]}
                 </Typography>
-                <Typography
-                  variant="subtitle2"
-                  sx={{
-                    fontWeight: 700,
-                    width: 28,
-                    height: 28,
-                    borderRadius: '50%',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    ...(isToday && { bgcolor: 'primary.main', color: 'primary.contrastText' }),
-                  }}
-                >
-                  {format(day, 'd')}
-                </Typography>
+                <DayBadge day={format(day, 'd')} isToday={isToday} size={28} variant="subtitle2" />
               </Box>
             );
           })}
@@ -114,6 +102,6 @@ export function WeekView({ events }: WeekViewProps) {
           })}
         </Box>
       </Box>
-    </Paper>
+    </ViewContainer>
   );
 }

@@ -1,6 +1,8 @@
 import { useRef, useEffect } from 'react';
-import { Box, Typography, Paper } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { format } from 'date-fns';
+import { DayBadge } from '../../ui/DayBadge';
+import { ViewContainer } from '../../ui/ViewContainer';
 import { toZonedTime } from 'date-fns-tz';
 import type { CalendarEvent } from '../../../types/event';
 import { useCalendarStore } from '../../../stores/calendarStore';
@@ -26,7 +28,7 @@ export function DayView({ events }: DayViewProps) {
   }, []);
 
   return (
-    <Paper variant="outlined" sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <ViewContainer>
       {/* Single scroll container — header sticky inside so width always matches grid */}
       <Box
         ref={scrollRef}
@@ -50,22 +52,7 @@ export function DayView({ events }: DayViewProps) {
             <Typography variant="caption" color="text.secondary">
               {format(currentDate, 'EEEE')}
             </Typography>
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 700,
-                width: 36,
-                height: 36,
-                borderRadius: '50%',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                mx: 'auto',
-                ...(isToday && { bgcolor: 'primary.main', color: 'primary.contrastText' }),
-              }}
-            >
-              {format(currentDate, 'd')}
-            </Typography>
+            <DayBadge day={format(currentDate, 'd')} isToday={isToday} size={36} variant="h6" />
           </Box>
         </Box>
 
@@ -83,6 +70,6 @@ export function DayView({ events }: DayViewProps) {
           </Box>
         </Box>
       </Box>
-    </Paper>
+    </ViewContainer>
   );
 }

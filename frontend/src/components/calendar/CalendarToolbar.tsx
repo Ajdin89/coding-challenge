@@ -80,26 +80,25 @@ export function CalendarToolbar() {
         variant="contained"
         startIcon={<AddIcon />}
         onClick={() => openCreateModal()}
-        size="small"
         sx={{ flexShrink: 0 }}
       >
         New Event
       </Button>
 
       {/* Today */}
-      <Button variant="outlined" onClick={goToToday} size="small" sx={{ flexShrink: 0 }}>
+      <Button variant="outlined" onClick={goToToday} sx={{ flexShrink: 0 }}>
         Today
       </Button>
 
       {/* Prev / Next */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
         <Tooltip title="Previous">
-          <IconButton onClick={goPrev} size="small">
+          <IconButton onClick={goPrev}>
             <NavigateBeforeIcon />
           </IconButton>
         </Tooltip>
         <Tooltip title="Next">
-          <IconButton onClick={goNext} size="small">
+          <IconButton onClick={goNext}>
             <NavigateNextIcon />
           </IconButton>
         </Tooltip>

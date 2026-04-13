@@ -40,11 +40,11 @@ export function TimeGridColumn({
   const todayStr = `${nowZoned.getFullYear()}-${String(nowZoned.getMonth() + 1).padStart(2, '0')}-${String(nowZoned.getDate()).padStart(2, '0')}`;
   const currentHourFraction = nowZoned.getHours() + nowZoned.getMinutes() / 60;
 
-  const slotBg = (h: number): string | undefined => {
-    if (isWeekend) return '#f5f5f5';
-    if (dateStr < todayStr) return '#f5f5f5';
-    if (dateStr === todayStr && h + 1 <= currentHourFraction) return '#f5f5f5';
-    return undefined; // white (default)
+  const isSlotPast = (h: number): boolean => {
+    if (isWeekend) return true;
+    if (dateStr < todayStr) return true;
+    if (dateStr === todayStr && h + 1 <= currentHourFraction) return true;
+    return false;
   };
 
   const handleSlotClick = (hour: number) => {
@@ -62,15 +62,15 @@ export function TimeGridColumn({
       {Array.from({ length: TOTAL_HOURS }, (_, h) => (
         <Box
           key={h}
-          sx={{
+          sx={(theme) => ({
             height: HOUR_HEIGHT,
             borderBottom: '1px solid',
             borderColor: 'divider',
             position: 'relative',
             cursor: 'pointer',
-            bgcolor: slotBg(h),
+            bgcolor: isSlotPast(h) ? theme.palette.action.disabledBackground : undefined,
             '&:hover': { bgcolor: 'action.hover' },
-          }}
+          })}
           onClick={() => handleSlotClick(h)}
         >
           {/* Half-hour dashed divider */}
