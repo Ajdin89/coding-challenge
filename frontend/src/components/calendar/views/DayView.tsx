@@ -2,10 +2,10 @@ import { useRef, useEffect } from 'react';
 import { Box, Typography, Paper } from '@mui/material';
 import { format } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
-import type { CalendarEvent } from '../../types/event';
-import { useCalendarStore } from '../../stores/calendarStore';
-import { TimeGridColumn, TimeGutter, HOUR_HEIGHT } from './TimeGrid';
-import { getDateInTimezone } from '../../utils/timezone';
+import type { CalendarEvent } from '../../../types/event';
+import { useCalendarStore } from '../../../stores/calendarStore';
+import { TimeGridColumn, TimeGutter, HOUR_HEIGHT } from '../shared/TimeGrid';
+import { getDateInTimezone } from '../../../utils/timezone';
 
 interface DayViewProps {
   events: CalendarEvent[];

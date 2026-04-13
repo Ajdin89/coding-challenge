@@ -1,9 +1,9 @@
 import { Box, Typography, Tooltip } from '@mui/material';
 import RepeatIcon from '@mui/icons-material/Repeat';
 import { alpha, darken, lighten } from '@mui/material/styles';
-import type { CalendarEvent } from '../../types/event';
-import { getEventColorTheme, getEventTextColor } from '../../utils/eventColors';
-import { formatInTimezone } from '../../utils/timezone';
+import type { CalendarEvent } from '../../../types/event';
+import { getEventColorTheme, getEventTextColor } from '../../../utils/eventColors';
+import { formatInTimezone } from '../../../utils/timezone';
 
 interface EventChipProps {
   event: CalendarEvent;

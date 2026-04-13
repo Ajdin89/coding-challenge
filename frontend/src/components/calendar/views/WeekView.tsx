@@ -1,9 +1,9 @@
 import { useRef, useEffect } from 'react';
 import { Box, Typography, Paper } from '@mui/material';
 import { startOfWeek, addDays, format } from 'date-fns';
-import type { CalendarEvent } from '../../types/event';
-import { useCalendarStore } from '../../stores/calendarStore';
-import { TimeGridColumn, TimeGutter, HOUR_HEIGHT } from './TimeGrid';
+import type { CalendarEvent } from '../../../types/event';
+import { useCalendarStore } from '../../../stores/calendarStore';
+import { TimeGridColumn, TimeGutter, HOUR_HEIGHT } from '../shared/TimeGrid';
 
 const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 

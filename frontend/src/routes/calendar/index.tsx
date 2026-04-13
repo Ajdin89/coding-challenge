@@ -3,10 +3,10 @@ import { Box, CircularProgress, Alert } from '@mui/material';
 import { useCalendarStore } from '../../stores/calendarStore';
 import { useEvents } from '../../hooks/useEvents';
 import { CalendarToolbar } from '../../components/calendar/CalendarToolbar';
-import { WeekView } from '../../components/calendar/WeekView';
-import { DayView } from '../../components/calendar/DayView';
-import { MonthView } from '../../components/calendar/MonthView';
-import { EventModal } from '../../components/calendar/EventModal';
+import { WeekView } from '../../components/calendar/views/WeekView';
+import { DayView } from '../../components/calendar/views/DayView';
+import { MonthView } from '../../components/calendar/views/MonthView';
+import { EventModal } from '../../components/calendar/modal/EventModal';
 import { UpcomingSidebar } from '../../components/calendar/UpcomingSidebar';
 
 export const Route = createFileRoute('/calendar/')({

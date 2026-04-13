@@ -4,9 +4,9 @@
  */
 import { Box, Typography } from '@mui/material';
 import { toZonedTime } from 'date-fns-tz';
-import type { CalendarEvent } from '../../types/event';
+import type { CalendarEvent } from '../../../types/event';
 import { EventChip } from './EventChip';
-import { getHourOffsetInTimezone, getDateInTimezone } from '../../utils/timezone';
+import { getHourOffsetInTimezone, getDateInTimezone } from '../../../utils/timezone';
 
 export const HOUR_HEIGHT = 48; // px per hour
 const TOTAL_HOURS = 24;

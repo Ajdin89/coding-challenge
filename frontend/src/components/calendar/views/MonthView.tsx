@@ -9,10 +9,10 @@ import {
   isSameMonth,
 } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
-import type { CalendarEvent } from '../../types/event';
-import { useCalendarStore } from '../../stores/calendarStore';
-import { EventChip } from './EventChip';
-import { getDateInTimezone } from '../../utils/timezone';
+import type { CalendarEvent } from '../../../types/event';
+import { useCalendarStore } from '../../../stores/calendarStore';
+import { EventChip } from '../shared/EventChip';
+import { getDateInTimezone } from '../../../utils/timezone';
 
 const DAY_HEADERS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const MAX_VISIBLE = 3;
